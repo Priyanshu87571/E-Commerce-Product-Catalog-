@@ -1,0 +1,2 @@
+import {Router} from 'express';import * as c from '../controllers/productController.js';import {protect,adminOnly} from '../middleware/auth.js';import {validateProduct,sanitizeInput} from '../middleware/validate.js';
+const r=Router();r.get('/categories',c.categoryList);r.get('/',c.list);r.get('/:id',c.get);r.post('/',protect,adminOnly,sanitizeInput,validateProduct,c.create);r.put('/:id',protect,adminOnly,sanitizeInput,validateProduct,c.update);r.delete('/:id',protect,adminOnly,c.remove);export default r;

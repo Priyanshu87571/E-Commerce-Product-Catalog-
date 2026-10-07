@@ -1,0 +1,3 @@
+import jwt from 'jsonwebtoken'; import User from '../models/User.js'; import {env} from '../config/env.js';
+export const protect=async(req,res,next)=>{try{const h=req.headers.authorization;if(!h?.startsWith('Bearer '))return res.status(401).json({success:false,message:'Authentication required'});const token=h.split(' ')[1];const payload=jwt.verify(token,env.jwtSecret);req.user=await User.findById(payload.id).select('-password');if(!req.user)return res.status(401).json({success:false,message:'User no longer exists'});next();}catch(e){res.status(401).json({success:false,message:'Invalid or expired token'});}};
+export const adminOnly=(req,res,next)=>req.user?.role==='admin'?next():res.status(403).json({success:false,message:'Admin access required'});

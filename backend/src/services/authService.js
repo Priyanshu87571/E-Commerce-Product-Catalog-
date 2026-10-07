@@ -1,0 +1,4 @@
+import jwt from 'jsonwebtoken'; import User from '../models/User.js'; import {env} from '../config/env.js';
+const token=id=>jwt.sign({id},env.jwtSecret,{expiresIn:env.jwtExpiresIn});
+export const register=async({name,email,password})=>{const exists=await User.findOne({email});if(exists){const e=new Error('Email already registered');e.statusCode=409;throw e;}const user=await User.create({name,email,password});return {user:{id:user._id,name:user.name,email:user.email,role:user.role},token:token(user._id)};};
+export const login=async({email,password})=>{const user=await User.findOne({email}).select('+password');if(!user||!(await user.comparePassword(password))){const e=new Error('Invalid email or password');e.statusCode=401;throw e;}return {user:{id:user._id,name:user.name,email:user.email,role:user.role},token:token(user._id)};};
